@@ -1,10 +1,7 @@
 import torch.cuda
 from tqdm import tqdm
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-
-def train_fn(data_loader, model, optimizer, loss_fn):
+def train_fn(data_loader, model, optimizer, loss_fn, device):
     model.train()
     loop = tqdm(data_loader)
     for batch_idx, (image, mask) in enumerate(loop):
