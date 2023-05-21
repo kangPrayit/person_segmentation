@@ -116,7 +116,7 @@ class PlanktonSegmentationDataset(Dataset):
 
 
 def get_plankton_loader(input_dir="", batch_size=16, is_train=True, transform=None):
-    train_ds = PlanktonSegmentationDataset(images_dir=input_dir, transform=transform)
+    train_ds = PlanktonSegmentationDataset(data_dir=input_dir, transform=transform)
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=is_train)
     return train_loader
 
