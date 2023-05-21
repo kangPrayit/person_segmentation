@@ -40,19 +40,17 @@ class CarvanaCarSegmentation(Dataset):
         x = round(len(os.listdir(images_dir)) * .8)
         if is_train:
             self.images = os.listdir(images_dir)[:x]
-            self.masks = os.listdir(masks_dir)[:x]
         else:
             self.images = os.listdir(images_dir)[x:]
-            self.masks = os.listdir(masks_dir)[x:]
 
     def __len__(self):
         return len(self.images)
 
     def __getitem__(self, item):
         img_path = os.path.join(self.images_dir, self.images[item])
-        mask_path = os.path.join(self.masks_dir, self.masks[item])
-        image = np.array(Image.open(img_path).convert('RGB'), dtype=np.float32)/255
-        mask = np.array(Image.open(mask_path).convert('L'), dtype=np.float32)/255
+        mask_path = os.path.join(self.masks_dir, self.images[item][:-4] + '_mask.gif')
+        image = np.array(Image.open(img_path).convert('RGB'), dtype=np.float32) / 255
+        mask = np.array(Image.open(mask_path).convert('L'), dtype=np.float32) / 255
 
         if self.transform:
             augmentations = self.transform(image=image, mask=mask)
@@ -67,5 +65,15 @@ def get_loader(input_dir, mask_dir, batch_size, train_transform, val_transform):
     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
     val_ds = SegmentationDataset(input_dir=input_dir, output_dir=mask_dir,
                                  is_train=False, transform=val_transform)
+    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
+    return train_loader, val_loader
+
+
+def get_carvana_loader(input_dir, mask_dir, batch_size, train_transform, val_transform):
+    train_ds = CarvanaCarSegmentation(images_dir=input_dir, masks_dir=mask_dir,
+                                      is_train=True, transform=train_transform)
+    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+    val_ds = CarvanaCarSegmentation(images_dir=input_dir, masks_dir=mask_dir,
+                                    is_train=False, transform=val_transform)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
     return train_loader, val_loader

@@ -1,6 +1,7 @@
 import torch.cuda
 from tqdm import tqdm
 
+
 def train_fn(data_loader, model, optimizer, loss_fn, device):
     model.train()
     loop = tqdm(data_loader)
