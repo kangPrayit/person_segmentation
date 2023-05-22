@@ -10,7 +10,7 @@ import segmentation_models_pytorch as smp
 from torch import nn, optim
 
 from dataset import *
-from engine import train_fn
+from engine import *
 from metrics import check_accuracy
 
 
@@ -55,8 +55,8 @@ if __name__ == '__main__':
     loss_test, accuracy_test, precision_test, recall_test, dice_test, dice_test, iou_test = [], [], [], [], [], [], []
     for epoch in range(NUM_EPOCHS):
         print('#' * 20, str(epoch))
-        score_train = train_fn(train_loader, model, optimizer, loss_fn)
-        score_test = check_accuracy(val_loader, model, DEVICE)
+        score_train = train_fn(train_loader, model, optimizer, loss_fn, DEVICE)
+        score_test = evaluate_fn(val_loader, model, loss_fn, DEVICE)
 
         loss_train.append(score_train['loss'])
         accuracy_train.append(score_train['accuracy_score'])
@@ -86,6 +86,6 @@ if __name__ == '__main__':
 
     experiment_name = 'unet_efficient_b3'
     SAVE_DIR = Path('/content/drive/MyDrive/DEEP LEARNING PROJECT/PRAYITNO/experiments/')
-    torch.save(model, os.path.join(SAVE_DIR, f"model{experiment_name}.pth"))
+    torch.save(model, os.path.join(SAVE_DIR, f"model_{experiment_name}.pth"))
     pd.DataFrame.from_dict(history).to_csv(os.path.join(SAVE_DIR, f"history_{experiment_name}.csv"), index=False)
 
